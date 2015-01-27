@@ -23,6 +23,7 @@
 
 			switch (key) {
 				case 188:
+				case 87:
 					//console.log("forward");
 					this.moveForward = true;
 					break;
@@ -31,10 +32,12 @@
 					this.moveLeft = true;
 					break;
 				case 69:
+				case 68:
 					//console.log("right");
 					this.moveRight = true;
 					break;
 				case 79:
+				case 83:
 					//console.log("back");
 					this.moveBackward = true;
 					break;
