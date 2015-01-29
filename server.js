@@ -3,6 +3,8 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var port = process.env.PORT || 8000;
+
 app.use(express.static(__dirname + '/public'));
 
 var players = [];
@@ -19,7 +21,6 @@ io.on('connection', function(socket) {
 		io.emit('moved', msg);
 	});
 });
-
-http.listen(8090, function() {
-	console.log('listening on *:8090');
+http.listen(port, function() {
+	console.log('listening on *:' + port);
 });
