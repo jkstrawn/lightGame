@@ -23,7 +23,6 @@
 
 			this.modelUrls = {
 				dead: [
-					"res/models/ground_block/ground_block16.dae",
 					"res/models/rooms/roomBed.dae",
 					//"res/models/room/roomBed.dae",
 					"res/models/rooms/roomHall.dae",
