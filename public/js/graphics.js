@@ -122,6 +122,27 @@
 
 			this.addCrate(50, 0, 100, 20);
 			this.addCrate(-50, 15, 100, 50);
+
+			var lightTexture = THREE.ImageUtils.loadTexture("res/textures/light4.png");
+			var lightMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFF99, map: lightTexture, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+			
+			var lightBeam = new THREE.PlaneGeometry(4, 500, 4, 100);
+			var lightBeamObject = new THREE.Mesh(lightBeam, lightMaterial);
+			lightBeamObject.position.set( 0, 10, 0);
+			this.scene.add(lightBeamObject);
+
+			var lightBeam2 = new THREE.PlaneGeometry(4, 500, 4, 100);
+			var lightBeamObject2 = new THREE.Mesh(lightBeam2, lightMaterial);
+			lightBeamObject2.rotation.y = Math.PI/3;
+			lightBeamObject2.position.set( 0, 10, 0);
+			this.scene.add(lightBeamObject2);
+
+			var lightBeam3 = new THREE.PlaneGeometry(4, 500, 4, 100);
+			var lightBeamObject3 = new THREE.Mesh(lightBeam3, lightMaterial);
+			lightBeamObject3.rotation.y = 2 * Math.PI/3;
+			lightBeamObject3.position.set( 0, 10, 0);
+			this.scene.add(lightBeamObject3);
+
 		},
 
 		createPlayer: function() {

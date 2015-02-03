@@ -102,8 +102,13 @@
 			    newPosition.id = 1;
 			    newPosition.rotation = sim.controls.getRotation() - Math.PI;
 			    socket.emit('move', newPosition);
-                //console.log(newPosition);
+				
+				this.model.playContinued("walk", 1, 2);
+            } else {
+				this.model.playContinued("idle", 1, 2);
             }
+
+
 
 
 			var directionVector = new THREE.Vector3(0, -200, 0);

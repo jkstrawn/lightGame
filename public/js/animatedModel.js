@@ -153,6 +153,14 @@ THREE.AnimatedModel = function () {
 
 	};
 
+	this.playContinued = function(animName, weight, speed) {
+
+		if (!this.animations[animName].isPlaying) {
+			this.stopAll();
+			this.play(animName, weight, speed);
+		}
+	};
+
 	this.crossfade = function( fromAnimName, toAnimName, duration ) {
 
 		var fromAnim = this.animations[ fromAnimName ];
