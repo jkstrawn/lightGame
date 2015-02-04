@@ -58,7 +58,7 @@ THREE.FresnelShader = {
 
 		"void main() {",
 
-			"vec4 reflectedColor = textureCube( tCube, vec3( -vReflect.x, vReflect.yz ) );",
+			"vec4 reflectedColor = textureCube( tCube, vec3( vReflect.x, vReflect.yz ) );",
 			"vec4 refractedColor = vec4( 1.0 );",
 
 			"refractedColor.r = textureCube( tCube, vec3( vRefract[0].x, vRefract[0].yz ) ).r;",

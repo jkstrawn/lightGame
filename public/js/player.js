@@ -18,6 +18,7 @@
 			//newPlayerModel.play("walk", 1, 2);
 			this.model = sim.graphics.getModel(sim.modelUrls.live[0]);
 			this.model.position.set(this.position.x, this.position.y, this.position.z);
+			this.model.castShadow = true;
 			sim.graphics.scene.add(this.model);
 		},
 

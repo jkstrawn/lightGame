@@ -33,10 +33,11 @@ THREE.FresnelShader = {
 			"vec4 worldPosition = modelMatrix * vec4( position, 1.0 );",
 
 			"vec3 worldNormal = normalize( mat3( modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz ) * normal );",
+			"vec3 worldNormalRef = worldNormal.scale(-1, 1, 1);",
 
 			"vec3 I = worldPosition.xyz - cameraPosition;",
 
-			"vReflect = reflect( I, worldNormal );",
+			"vReflect = reflect( I, worldNormaalRef );",
 			"vRefract[0] = refract( normalize( I ), worldNormal, mRefractionRatio );",
 			"vRefract[1] = refract( normalize( I ), worldNormal, mRefractionRatio * 0.99 );",
 			"vRefract[2] = refract( normalize( I ), worldNormal, mRefractionRatio * 0.98 );",

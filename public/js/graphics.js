@@ -91,18 +91,18 @@
 	
 	
 	
-			// this.refractSphereCamera = new THREE.CubeCamera( .1, 1000000, 512 );
-			// this.scene.add( this.refractSphereCamera );
+			this.refractSphereCamera = new THREE.CubeCamera( .1, 1000000, 512 );
+			this.scene.add( this.refractSphereCamera );
 
-			// var customMaterial = this.getCustomMaterial(this.toIncrease, this.refractSphereCamera);
+			var customMaterial = this.getCustomMaterial(this.toIncrease, this.refractSphereCamera);
 			
-			// var sphereGeometry = new THREE.SphereGeometry( 20, 64, 32 );
-			// this.sphere = new THREE.Mesh( sphereGeometry, customMaterial );
-			// this.sphere.position.set(0, 0, 100);
-			// this.scene.add(this.sphere);
+			var sphereGeometry = new THREE.SphereGeometry( 20, 64, 32 );
+			this.sphere = new THREE.Mesh( sphereGeometry, customMaterial );
+			this.sphere.position.set(80, 10, 0);
+			this.scene.add(this.sphere);
 			
-			// this.refractSphereCamera.rotation.set(0, 0, 0);
-			// this.refractSphereCamera.position.set(this.sphere.position.x, this.sphere.position.y, this.sphere.position.z);
+			this.refractSphereCamera.rotation.set(0, 0, 0);
+			this.refractSphereCamera.position.set(this.sphere.position.x, this.sphere.position.y, this.sphere.position.z);
 
 	
 			// this.refractSphereCamera2 = new THREE.CubeCamera( .1, 1000000, 512 );
@@ -120,8 +120,8 @@
 
 			
 
-			this.addCrate(50, 0, 100, 20);
-			this.addCrate(-50, 15, 100, 50);
+			this.addCrate(120, 10, 0, 20);
+			this.addCrate(-50, 25, 100, 50);
 
 			var lightTexture = THREE.ImageUtils.loadTexture("res/textures/light4.png");
 			var lightMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFF99, map: lightTexture, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, side: THREE.DoubleSide });
@@ -142,6 +142,46 @@
 			lightBeamObject3.rotation.y = 2 * Math.PI/3;
 			lightBeamObject3.position.set( 0, 10, 0);
 			this.scene.add(lightBeamObject3);
+
+
+
+			var width = 50;
+			var length = 600;
+			var texture = 'res/textures/concrete_dark.png';
+			var textureObject = THREE.ImageUtils.loadTexture(texture);
+			textureObject.wrapS = THREE.RepeatWrapping;
+			textureObject.wrapT = THREE.RepeatWrapping;
+			textureObject.anisotropy = 16;
+			var textureRepeatX = Math.ceil(length / 80);
+			var textureRepeatY = Math.ceil(width / 80);
+			textureObject.repeat.set(textureRepeatX, textureRepeatY);
+
+			var material4 = new THREE.MeshLambertMaterial({
+				map: textureObject, side: THREE.DoubleSide
+			});
+
+
+			var geometry = new THREE.PlaneGeometry(length, width, 39, 19);
+			var plane = new THREE.Mesh(geometry, material4);
+			plane.position.set(0, 25, 150);
+			this.scene.add(plane);
+
+			var geometry2 = new THREE.PlaneGeometry(length, width, 39, 19);
+			var plane2 = new THREE.Mesh(geometry2, material4);
+			plane2.position.set(0, 25, -150);
+			this.scene.add(plane2);
+
+			var geometry3 = new THREE.PlaneGeometry(length, width, 39, 19);
+			var plane3 = new THREE.Mesh(geometry3, material4);
+			plane3.position.set(300, 25, 0);
+			plane3.rotation.y = Math.PI/2;
+			this.scene.add(plane3);
+
+			var geometry4 = new THREE.PlaneGeometry(length, width, 39, 19);
+			var plane4 = new THREE.Mesh(geometry4, material4);
+			plane4.position.set(-300, 25, 0);
+			plane4.rotation.y = Math.PI/2;
+			this.scene.add(plane4);
 
 		},
 
@@ -166,10 +206,11 @@
 			var texture = THREE.ImageUtils.loadTexture( 'res/textures/crate.gif' );
 			texture.anisotropy = this.renderer.getMaxAnisotropy();
 
-			var material = new THREE.MeshBasicMaterial( { map: texture } );
+			var material = new THREE.MeshLambertMaterial( { map: texture } );
 
 			mesh = new THREE.Mesh( geometry, material );
 			mesh.position.set(x, y, z);
+			mesh.castShadow = true;
 			this.scene.add( mesh );
 		},
 
@@ -200,51 +241,21 @@
 
 		addGround: function() {
 
-			var width = 4000;
-			var length = 5000;
-			var texture = 'res/textures/grass.png';
-			var textureObject = THREE.ImageUtils.loadTexture(texture);
-			textureObject.wrapS = THREE.RepeatWrapping;
-			textureObject.wrapT = THREE.RepeatWrapping;
-			textureObject.anisotropy = 16;
-			var textureRepeatX = Math.ceil(length / 80);
-			var textureRepeatY = Math.ceil(width / 80);
-			textureObject.repeat.set(textureRepeatX, textureRepeatY);
 
-			var material4 = new THREE.MeshBasicMaterial({
-				map: textureObject, side: THREE.DoubleSide
-			});
-			var geometry = new THREE.PlaneGeometry(length, width, 39, 19);
 
-			var distance = 0;
-			var counter = 0;
-			var heights = [];
-
-			for (var i = 0; i < geometry.vertices.length; i++) {
-				counter++;
-				if (counter > 19) {
-					distance++;
-					counter = 0;
-				}
-				var y = (34 - distance);
-				var offset = 15;
-				var depth = (y - offset) * (y - offset) * .4 - 100;
-				var height = Math.random() * 50 + depth * 2;
-				height = Math.round(height);
-				if (i > geometry.vertices.length - 120) {
-					height = 0;
-				}
-				heights.push(height);
-				geometry.vertices[i].z = height;
-			}
-
-			// geometry.applyMatrix(transformation);
-			var plane = new THREE.Mesh(geometry, material4);
-			plane.rotation.x = -1/2 * Math.PI;
-			//plane.position.set(0, 0, -100);
-			plane.position.set(0, -10, -1600);
-			this.plane = plane;
-			this.scene.add(plane);
+			var floorTexture = new THREE.ImageUtils.loadTexture( 'res/textures/honeycomb.jpg' );
+			floorTexture.anisotropy = 16;
+			floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
+			floorTexture.repeat.set( 20, 20 );
+			// Note the change to Lambert material.
+			var floorMaterial = new THREE.MeshLambertMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+			var floorGeometry = new THREE.PlaneGeometry(600, 600, 100, 100);
+			var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+			floor.rotation.x = Math.PI / 2;
+			// Note the mesh is flagged to receive shadows
+			floor.receiveShadow = true;
+			this.plane = floor;
+			this.scene.add(floor);
 		},
 
 		addRoomSpotParticles: function(startX, startY, segments, gridWidth, gridLength) {
@@ -377,7 +388,7 @@
 		},
 
 		addLights: function() {
-			var hemiLight = new THREE.HemisphereLight(0xffe5bb, 0xFFBF00, .6);
+			var hemiLight = new THREE.HemisphereLight(0x404040, 0x404040, .6);
 			hemiLight.position.set( 0, 500, 0 );
 			this.scene.add(hemiLight);
 
@@ -387,12 +398,24 @@
 			//hemiLight.position.set( 0, 500, 0 );
 			//this.scene.add( hemiLight );
 
-			var ambientLight = new THREE.AmbientLight( 0x808080 );
+			var ambientLight = new THREE.AmbientLight( 0x505050 );
 			this.scene.add( ambientLight );
 
 			sim.pointLight = new THREE.PointLight( 0xffcc00, 2, 30 );
 			sim.pointLight.position.set( 0, 100, 0 );
 			this.scene.add( sim.pointLight );
+
+
+
+			var spotlight3 = new THREE.SpotLight(0xaaaaff);
+			spotlight3.position.set(100, 60, 0);
+			spotlight3.shadowDarkness = 0.95;
+			spotlight3.intensity = 2;
+			spotlight3.castShadow = true;
+			var lightTarget = new THREE.Object3D();
+			lightTarget.position.set(120, 0, 0);
+			spotlight3.target = lightTarget;
+			this.scene.add(spotlight3);
 		},
 
 		addRendered: function() {
@@ -416,6 +439,8 @@
 			this.renderer.gammaInput = true;
 			this.renderer.gammaOutput = true;
 			this.renderer.physicallyBasedShading = true;
+
+			this.renderer.shadowMapEnabled = true;
 		},
 
 		addSkyDome: function() {
@@ -425,7 +450,7 @@
 			cubeMap.flipY = false;
 
 			var loader = new THREE.ImageLoader();
-			loader.load( 'res/textures/skyboxsun25degtest.png', function ( image ) {
+			loader.load( 'res/textures/grimmnight_large.jpg', function ( image ) {
 
 				var getSide = function ( x, y ) {
 
@@ -581,6 +606,7 @@
 			this.camera.updateProjectionMatrix();
 
 			this.renderer.setSize( window.innerWidth, window.innerHeight );
+
 		},
 
 		focusCamera: function(x, y, z) {
@@ -639,9 +665,9 @@
 		render: function() {
 
 
-			// this.sphere.visible = false;
-			// this.refractSphereCamera.updateCubeMap( this.renderer, this.scene );
-			// this.sphere.visible = true;
+			this.sphere.visible = false;
+			this.refractSphereCamera.updateCubeMap( this.renderer, this.scene );
+			this.sphere.visible = true;
 			// this.sphere2.visible = false;
 			// this.refractSphereCamera2.updateCubeMap( this.renderer, this.scene );
 			// this.sphere2.visible = true;
