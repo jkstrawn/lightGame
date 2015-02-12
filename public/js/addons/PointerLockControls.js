@@ -49,7 +49,7 @@ THREE.PointerLockControls = function ( camera ) {
 	};
 
 	this.getRotation = function() {
-		return yawObject.rotation.y;
+		return {x: pitchObject.rotation.x, y: yawObject.rotation.y};
 	};
 
 	this.isOnObject = function ( boolean ) {

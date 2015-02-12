@@ -91,18 +91,18 @@
 	
 	
 	
-			this.refractSphereCamera = new THREE.CubeCamera( .1, 1000000, 512 );
-			this.scene.add( this.refractSphereCamera );
+			// this.refractSphereCamera = new THREE.CubeCamera( .1, 1000000, 512 );
+			// this.scene.add( this.refractSphereCamera );
 
-			var customMaterial = this.getCustomMaterial(this.toIncrease, this.refractSphereCamera);
+			// var customMaterial = this.getCustomMaterial(this.toIncrease, this.refractSphereCamera);
 			
-			var sphereGeometry = new THREE.SphereGeometry( 20, 64, 32 );
-			this.sphere = new THREE.Mesh( sphereGeometry, customMaterial );
-			this.sphere.position.set(80, 10, 0);
-			this.scene.add(this.sphere);
+			// var sphereGeometry = new THREE.SphereGeometry( 20, 64, 32 );
+			// this.sphere = new THREE.Mesh( sphereGeometry, customMaterial );
+			// this.sphere.position.set(80, 10, 0);
+			// this.scene.add(this.sphere);
 			
-			this.refractSphereCamera.rotation.set(0, 0, 0);
-			this.refractSphereCamera.position.set(this.sphere.position.x, this.sphere.position.y, this.sphere.position.z);
+			// this.refractSphereCamera.rotation.set(0, 0, 0);
+			// this.refractSphereCamera.position.set(this.sphere.position.x, this.sphere.position.y, this.sphere.position.z);
 
 	
 			// this.refractSphereCamera2 = new THREE.CubeCamera( .1, 1000000, 512 );
@@ -119,29 +119,31 @@
 			// this.refractSphereCamera2.position.set(this.sphere2.position.x, this.sphere2.position.y, this.sphere2.position.z);
 
 			
-
-			this.addCrate(120, 10, 0, 20);
+			sim.box = this.addCrate(0, 0, 0, 10);
+			this.addCrate(150, 10, 0, 20);
 			this.addCrate(-50, 25, 100, 50);
 
 			var lightTexture = THREE.ImageUtils.loadTexture("res/textures/light4.png");
 			var lightMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFF99, map: lightTexture, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, side: THREE.DoubleSide });
 			
-			var lightBeam = new THREE.PlaneGeometry(4, 500, 4, 100);
+			var lightBeam = new THREE.PlaneGeometry(500, 4, 4, 100);
 			var lightBeamObject = new THREE.Mesh(lightBeam, lightMaterial);
-			lightBeamObject.position.set( 0, 10, 0);
-			this.scene.add(lightBeamObject);
 
-			var lightBeam2 = new THREE.PlaneGeometry(4, 500, 4, 100);
+			var lightBeam2 = new THREE.PlaneGeometry(500, 4, 4, 100);
 			var lightBeamObject2 = new THREE.Mesh(lightBeam2, lightMaterial);
-			lightBeamObject2.rotation.y = Math.PI/3;
-			lightBeamObject2.position.set( 0, 10, 0);
-			this.scene.add(lightBeamObject2);
+			lightBeamObject2.rotation.x = Math.PI/3;
 
-			var lightBeam3 = new THREE.PlaneGeometry(4, 500, 4, 100);
+			var lightBeam3 = new THREE.PlaneGeometry(500, 4, 4, 100);
 			var lightBeamObject3 = new THREE.Mesh(lightBeam3, lightMaterial);
-			lightBeamObject3.rotation.y = 2 * Math.PI/3;
-			lightBeamObject3.position.set( 0, 10, 0);
-			this.scene.add(lightBeamObject3);
+			lightBeamObject3.rotation.x = 2 * Math.PI/3;
+
+			var group = new THREE.Object3D();//create an empty container
+			group.add( lightBeamObject );//add a mesh with geometry to it
+			group.add( lightBeamObject2 );//add a mesh with geometry to it
+			group.add( lightBeamObject3 );//add a mesh with geometry to it
+			group.position.set( 0, 10, 0);
+			this.beam = group;
+			this.scene.add( group );//when done, add the group to the scene
 
 
 
@@ -183,6 +185,7 @@
 			plane4.rotation.y = Math.PI/2;
 			this.scene.add(plane4);
 
+
 		},
 
 		createPlayer: function() {
@@ -212,6 +215,8 @@
 			mesh.position.set(x, y, z);
 			mesh.castShadow = true;
 			this.scene.add( mesh );
+
+			return mesh;
 		},
 
 		getCustomMaterial: function(index, camera) {
@@ -249,7 +254,7 @@
 			floorTexture.repeat.set( 20, 20 );
 			// Note the change to Lambert material.
 			var floorMaterial = new THREE.MeshLambertMaterial( { map: floorTexture, side: THREE.DoubleSide } );
-			var floorGeometry = new THREE.PlaneGeometry(600, 600, 100, 100);
+			var floorGeometry = new THREE.PlaneGeometry(600, 600, 50, 50);
 			var floor = new THREE.Mesh(floorGeometry, floorMaterial);
 			floor.rotation.x = Math.PI / 2;
 			// Note the mesh is flagged to receive shadows
@@ -409,13 +414,16 @@
 
 			var spotlight3 = new THREE.SpotLight(0xaaaaff);
 			spotlight3.position.set(100, 60, 0);
-			spotlight3.shadowDarkness = 0.95;
+			spotlight3.shadowDarkness = 0.7;
 			spotlight3.intensity = 2;
 			spotlight3.castShadow = true;
+			spotlight3.shadowCameraFov = 100;
+			spotlight3.shadowCameraFar = 150;
 			var lightTarget = new THREE.Object3D();
 			lightTarget.position.set(120, 0, 0);
 			spotlight3.target = lightTarget;
 			this.scene.add(spotlight3);
+			sim.l = spotlight3;
 		},
 
 		addRendered: function() {
@@ -441,6 +449,16 @@
 			this.renderer.physicallyBasedShading = true;
 
 			this.renderer.shadowMapEnabled = true;
+			this.renderer.shadowMapSoft = true;
+
+// this.renderer.shadowCameraNear = 3;
+// this.renderer.shadowCameraFar = this.camera.far;
+// this.renderer.shadowCameraFov = 50;
+
+// this.renderer.shadowMapBias = 0.0039;
+// this.renderer.shadowMapDarkness = 0.5;
+// this.renderer.shadowMapWidth = 1024;
+// this.renderer.shadowMapHeight = 1024;
 		},
 
 		addSkyDome: function() {
@@ -569,17 +587,55 @@
 				// };
 			}
 
-			var vector = new THREE.Vector3(
-			    this.mouse.x,
-			    this.mouse.y,
-			    0.5 );
+			// var vector = new THREE.Vector3(
+			//     this.mouse.x,
+			//     this.mouse.y,
+			//     0.5 );
 
-			this.projector.unprojectVector( vector, this.camera );
-			var dir = vector.sub( this.camera.position ).normalize();
-			var distance = - this.camera.position.z / dir.z;
-			var pos = this.camera.position.clone().add( dir.multiplyScalar( distance ) );
+			// this.projector.unprojectVector( vector, this.camera );
+			// var dir = vector.sub( this.camera.position ).normalize();
+			// var distance = - this.camera.position.z / dir.z;
+			// var pos = this.camera.position.clone().add( dir.multiplyScalar( distance ) );
 
-			return pos;
+			// console.log(pos);
+			// return pos;
+
+
+
+			// raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
+
+			// raycaster.ray.origin.copy( controls.getObject().position );
+			// raycaster.ray.origin.y -= 10;
+
+			// var intersections = raycaster.intersectObjects( objects );
+
+        	// console.log(( event.clientX / window.innerWidth ) * 2 - 1);
+        	var direction = new THREE.Vector3();
+        	var d = sim.controls.getDirection(direction);
+			// console.log(d);
+
+
+//var newx = 300 * ray.direction.x;
+//var newz = 300 * ray.direction.z;
+
+// EDIT CODE UPDATE
+
+			camPos = sim.controls.getObject().position.clone();
+			newPosition = d.clone().multiply(new THREE.Vector3(250, 250, 250)).add(camPos);
+
+			camRot = sim.controls.getRotation();
+
+
+			this.beam.rotation.set(0, camRot.y - Math.PI/2, -camRot.x);
+			this.beam.position.set(newPosition.x, newPosition.y, newPosition.z);
+			// this.beam2.rotation.set(Math.PI / 3, camRot.y - Math.PI/2, -camRot.x);
+			// this.beam3.rotation.set(2 * Math.PI / 3, camRot.y - Math.PI/2, -camRot.x - .25);
+			// sim.box.position.set(newPosition.x, newPosition.y, newPosition.z);
+			// sim.line.geometry.vertices[1].set(camPos.x, camPos.y - 2, camPos.z);
+			// sim.line.geometry.vertices[0].set(newPosition.x, newPosition.y, newPosition.z);
+			// sim.line.geometry.verticesNeedUpdate = true;
+			// sim.line.geometry.computeBoundingSphere();
+
 		},
 
 		getMousePositionByZ: function(event, z) {
@@ -665,9 +721,9 @@
 		render: function() {
 
 
-			this.sphere.visible = false;
-			this.refractSphereCamera.updateCubeMap( this.renderer, this.scene );
-			this.sphere.visible = true;
+			// this.sphere.visible = false;
+			// this.refractSphereCamera.updateCubeMap( this.renderer, this.scene );
+			// this.sphere.visible = true;
 			// this.sphere2.visible = false;
 			// this.refractSphereCamera2.updateCubeMap( this.renderer, this.scene );
 			// this.sphere2.visible = true;
