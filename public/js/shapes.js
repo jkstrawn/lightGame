@@ -420,4 +420,38 @@
 
 	SIM.Noble = Noble;
 
+
+	SIM.Servant = Servant;
+
+	var Projectile = my.Class(SIM.Shape, {
+		constructor: function(model, direction) {
+			Projectile.Super.call(this, model);
+
+			this.position = null;
+			this.direction = direction;
+			this.velocity = 100;
+		},
+
+		update: function(dt) {
+			if (this.position.x >  300 || this.position.y >  300 || this.position.z >  300 ||
+				this.position.x < -300 || this.position.y < -300 || this.position.z < -300) {
+				console.log(this.position);
+				sim.removeShape(this);
+				return;
+			}
+
+			Projectile.Super.prototype.update.call(this, dt);
+
+			var speed = dt / 1000 * this.velocity;
+			var diff = this.direction.clone().multiplyScalar(speed);
+
+			this.position.add(diff);
+
+			this.model.position.set(this.position.x, this.position.y, this.position.z);
+		},
+
+	});
+
+	SIM.Projectile = Projectile;
+
 })();

@@ -335,21 +335,16 @@
 
 			if (event.button == 0) {
 			//left click
-				if (this.draggingShape instanceof SIM.Servant) {
-					this.draggingShape.stopDragging();
-					this.draggingShape = null;
-					return;
-				}
 
-				for (var i = this.shapes.length - 1; i >= 0; i--) {
-					if (this.shapes[i].hover) {
-						this.shapes[i].clicked();
-					}
-				};
+	        	var direction = new THREE.Vector3();
+	        	var d = sim.controls.getDirection(direction);
 
-				if (this.hoveredShape instanceof SIM.GridSnapper) {
-					this.placeRoomOnHoverLocation(this.hoveredShape);
-				}
+				var box = this.graphics.addCrate(0, 0, 0, 5);
+	        	var bullet = new SIM.Projectile(box, d);
+
+
+				bullet.position = sim.controls.getObject().position.clone();
+	        	this.addShape(bullet);
 			}
 
 			if (event.button == 2) {
